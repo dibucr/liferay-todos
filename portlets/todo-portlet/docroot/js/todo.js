@@ -88,6 +88,7 @@ AUI.add('todo-portlet', function (Y, NAME) {
          * Creates a calendar component with the given field selector as trigger
          * 
          */
+
         _createCalendar: function(trigger) {
             var calendarClass = this.get('calendarWidgetClass');
             var datePicker = new calendarClass({
@@ -140,10 +141,15 @@ AUI.add('todo-portlet', function (Y, NAME) {
             this.done = box.all(".activity-finished");
             this.undo = box.all(".activity-undo");
             this.inputs = box.all(".edit input, .edit button, .edit textarea");
+
             
             /* initializes calendar */
             box.all(".tasks li").each(function(node) {
-                me._createCalendar('#' + node.one('.edit-time').get('id'));
+                var datePicker = me._createCalendar('#' + node.one('.edit-time').get('id'));
+                me.lis.one('.edit-time:input').on('focus', function (e) { 
+                    var popover = datePicker.getPopover();
+                    popover.show();
+                });
             });
             /** Shows edit mode when clicking on a task **/
             this.activities.each(function (activity) {
@@ -155,7 +161,6 @@ AUI.add('todo-portlet', function (Y, NAME) {
                     //element.titleInput.set("value",element.title.get("text"));
                     //element.timeInput.set("value",element.time.get("text"));
                 });
-
             });
 
             /* delete task */
@@ -400,6 +405,7 @@ AUI.add('todo-portlet', function (Y, NAME) {
             });
 
             modal.get('boundingBox').one('.add-cancel').on('click', function (e) {
+                e.preventDefault();
                 modal.hide();
             });
             
@@ -407,11 +413,17 @@ AUI.add('todo-portlet', function (Y, NAME) {
              *  If the modal is closed using the "x" at the corner, 
              *  the datepicker has to be manually hidden 
              */
-            modal.get('boundingBox').one('.close:button').on('click', function (e) {      
+            modal.get('boundingBox').one('.close:button').on('click', function (e) {    
             	var popover = datePicker.getPopover();
             	if (popover.get('visible')) {
             		popover.hide();
             	}
+            });
+
+            //shows calendar when "tab" is used
+            modal.get('boundingBox').one('.edit-time:input').on('focus', function (e) { 
+                var popover = datePicker.getPopover();
+                popover.show();
             });
         },
         
